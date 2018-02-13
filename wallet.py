@@ -15,20 +15,18 @@ if __name__ == '__main__':
     if my_file.is_file():
         # Open wallet
         print("Wallet Found")
-        password = input("Enter Password:")
+        password = input("Enter Password: ")
         with open('walletp.bin','r') as g:
             private_key = RSA.importKey(g.read(),  passphrase=password)
-            #print(private_key)
         with open('wallet.bin','r') as f:
             public_key = f.read()
 
     else:
         # Generate wallet keys
         print("New Wallet Created")
-        password = input("Enter Password:")
+        password = input("Enter Password: ")
         private_key = RSA.generate(1024)
-        #print(private_key)
-        pkey = private_key.exportKey(format='PEM', passphrase=password, pkcs=1)
+        pkey = private_key.exportKey(passphrase=password)
         public_key = private_key.publickey().exportKey().decode()
         with open('wallet.bin','w+') as f:
             f.write(public_key)
@@ -37,11 +35,12 @@ if __name__ == '__main__':
             g.write(pkey)
 
     #wallet commands
-    command = input("Enter Command:")
+    command = input("Enter Command: ")
     while command.strip() != 'exit':
         if command.strip() == 'address':
             with open('wallet.bin','r') as f:
                 print(f.read())
+
         elif command.strip() == 'help':
             print("Use any of the supported commands below:")
             print("help  - - - - - List possible commands")
@@ -49,7 +48,9 @@ if __name__ == '__main__':
             print("mine  - - - - - Start mining" )
             print("balance - - - - Account balance" )
             print("exit  - - - - - Exit wallet")
+
         elif command.strip() == 'mine':
+
             # Setup our blockchain
             leading_zeros = 10
             blockchain = BlockChain(100, (2 ** (256 - leading_zeros)) - 1, public_key)
@@ -62,8 +63,10 @@ if __name__ == '__main__':
             print(blockchain.blocks[0].get_json())
             print(blockchain.blocks[1].get_json())
             print(blockchain.blocks[2].get_json())
+
         elif command.strip() == 'balance':
             print(blockchain.account_balances)
+
         else:
             print("Error: Not supported command, type 'help' for list of supported commands")
-        command = input("Enter Command:")
+        command = input("Enter Command: ")
